@@ -1,0 +1,12 @@
+# Postgres driver (v3) + pgvector adapter
+psycopg[binary]>=3.1
+pgvector>=0.3.0
+
+# Local multilingual embeddings (Thai + English + mixed), no external embedding API
+sentence-transformers>=3.0
+
+# Generation step
+anthropic>=0.40
+
+# Config
+python-dotenv>=1.0

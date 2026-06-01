@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Env / secrets
+.env
+
+# Local data you may not want to publish (keep samples in data/, ignore the rest)
+data/private/
+
+# Claude Code session logs
+claude-logs/
+claude_skip_permissions.sh
+
+# Model cache (sentence-transformers downloads here)
+.cache/
