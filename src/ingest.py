@@ -1,30 +1,49 @@
-"""Ingest documents from data/ into Postgres: chunk -> embed -> upsert.
+"""Ingest documents into Postgres: load -> chunk -> embed -> upsert.
+
+Supports .md / .txt / .pdf. Scanned PDFs (no text layer) are skipped with a
+warning. Pass files or directories; directories are searched recursively.
 
 Usage:
-    python -m src.ingest                # ingest everything under data/
-    python -m src.ingest data/foo.md    # ingest specific files
+    python -m src.ingest                       # ingest $CORPUS_DIR (default: data/)
+    python -m src.ingest literature_review     # ingest a whole folder
+    python -m src.ingest data/foo.md a.pdf     # ingest specific files
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
 from .chunk import chunk_text
 from .db import connect
 from .embed import embed_texts
+from .loaders import SUPPORTED_SUFFIXES, looks_scanned, read_document
 
-DATA_DIR = Path("data")
-TEXT_SUFFIXES = {".md", ".txt"}
+CORPUS_DIR = Path(os.getenv("CORPUS_DIR", "data"))
 
 
-def _iter_files(args: list[str]) -> list[Path]:
-    if args:
-        return [Path(a) for a in args]
-    return sorted(p for p in DATA_DIR.rglob("*") if p.suffix.lower() in TEXT_SUFFIXES)
+def _expand(arg: str) -> list[Path]:
+    p = Path(arg)
+    if p.is_dir():
+        return sorted(f for f in p.rglob("*") if f.suffix.lower() in SUPPORTED_SUFFIXES)
+    return [p]
+
+
+def _collect(args: list[str]) -> list[Path]:
+    if not args:
+        return _expand(str(CORPUS_DIR))
+    files: list[Path] = []
+    for a in args:
+        files.extend(_expand(a))
+    return files
 
 
 def ingest_file(conn, path: Path) -> int:
-    text = path.read_text(encoding="utf-8")
+    text = read_document(path)
+    if looks_scanned(text):
+        print(f"  skip (scanned / no text layer, needs OCR): {path.name}")
+        return 0
+
     chunks = chunk_text(text)
     if not chunks:
         return 0
@@ -48,9 +67,9 @@ def ingest_file(conn, path: Path) -> int:
 
 
 def main(argv: list[str]) -> None:
-    files = _iter_files(argv)
+    files = _collect(argv)
     if not files:
-        print(f"No .md/.txt files found under {DATA_DIR}/")
+        print(f"No supported files (.md/.txt/.pdf) found in {CORPUS_DIR}/")
         return
 
     with connect() as conn:
@@ -61,7 +80,8 @@ def main(argv: list[str]) -> None:
                 continue
             n = ingest_file(conn, path)
             total += n
-            print(f"  {path}: {n} chunks")
+            if n:
+                print(f"  {path.name}: {n} chunks")
         print(f"Done. {total} chunks across {len(files)} file(s).")
 
 

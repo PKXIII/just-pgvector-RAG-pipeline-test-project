@@ -11,6 +11,10 @@ venv/
 # Local data you may not want to publish (keep samples in data/, ignore the rest)
 data/private/
 
+# Real corpus: copyrighted papers + theses, ~200MB — used locally, never pushed
+literature_review/
+ocr_text/
+
 # Claude Code session logs
 claude-logs/
 claude_skip_permissions.sh
