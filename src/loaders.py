@@ -28,12 +28,18 @@ def read_pdf(path: Path) -> str:
     return "\n\n".join(pages)
 
 
+def _sanitize(text: str) -> str:
+    # PostgreSQL text columns reject NUL (0x00) bytes, which PDF extraction can
+    # emit. Strip them (plus the BOM) so any source is safe to store.
+    return text.replace("\x00", "").replace("﻿", "")
+
+
 def read_document(path: Path) -> str:
     suffix = path.suffix.lower()
     if suffix in TEXT_SUFFIXES:
-        return path.read_text(encoding="utf-8", errors="ignore")
+        return _sanitize(path.read_text(encoding="utf-8", errors="ignore"))
     if suffix in PDF_SUFFIXES:
-        return read_pdf(path)
+        return _sanitize(read_pdf(path))
     raise ValueError(f"Unsupported file type: {path.suffix} ({path})")
 
 

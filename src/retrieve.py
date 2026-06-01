@@ -28,7 +28,7 @@ def retrieve(query: str, top_k: int | None = None) -> list[Hit]:
         # `<=>` is pgvector's cosine-distance operator; the HNSW index serves it.
         cur.execute(
             """
-            SELECT source, chunk_index, content, embedding <=> %s AS distance
+            SELECT source, chunk_index, content, embedding <=> %s::vector AS distance
             FROM documents
             ORDER BY distance ASC
             LIMIT %s
