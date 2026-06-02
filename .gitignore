@@ -8,6 +8,10 @@ venv/
 # Env / secrets
 .env
 
+# Personal documents (CV has private contact info) — never push to a public repo
+*.docx
+*_CV*.pdf
+
 # Local data you may not want to publish (keep samples in data/, ignore the rest)
 data/private/
 
