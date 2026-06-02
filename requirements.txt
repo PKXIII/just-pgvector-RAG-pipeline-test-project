@@ -13,3 +13,6 @@ anthropic>=0.40
 
 # Config
 python-dotenv>=1.0
+
+# MCP server (expose the corpus as tools to any Claude client) — optional
+mcp[cli]>=1.2

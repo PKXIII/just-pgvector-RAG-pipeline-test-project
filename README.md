@@ -144,10 +144,49 @@ Sources:
   ...
 ```
 
+## MCP server — expose the corpus to any Claude client
+
+`mcp_server.py` serves the corpus over the [Model Context Protocol](https://modelcontextprotocol.io),
+so **any Claude client** (Claude Code in another project, Claude Desktop) can
+retrieve from it as a tool — without knowing anything about pgvector or the
+embedding model. It reuses the same retrieval path as the CLI.
+
+Tools exposed:
+
+| Tool | Purpose |
+|------|---------|
+| `search_corpus(query, top_k=5)` | semantic search → passages + source + score |
+| `corpus_stats()` | indexed chunk/document counts and the document list |
+
+Register once for **all** your Claude Code projects (user scope):
+
+```bash
+claude mcp add corpus-rag --scope user \
+  -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 \
+  -- /ABS/PATH/.venv/bin/python /ABS/PATH/mcp_server.py
+```
+
+For **Claude Desktop**, add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "corpus-rag": {
+      "command": "/ABS/PATH/.venv/bin/python",
+      "args": ["/ABS/PATH/mcp_server.py"]
+    }
+  }
+}
+```
+
+The embedding model loads on the first `search_corpus` call, then stays warm for
+the life of the server process.
+
 ## Layout
 
 | Path | Role |
 |------|------|
+| `mcp_server.py` | MCP server exposing `search_corpus` / `corpus_stats` |
 | `db/schema.sql` | `documents` table + HNSW vector index |
 | `scripts/setup_db.sh` | one-time DB/role/extension bootstrap |
 | `scripts/ocr_pdf.py` | optional OCR for scanned PDFs (Thai+English) |
