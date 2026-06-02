@@ -91,6 +91,13 @@ Real output, indexing **30 machine-learning / finance papers** (~14,500 chunks,
 embedded on a single RTX 2070). The answers are grounded strictly in the
 retrieved passages and cite them.
 
+The corpus is a personal literature review spanning ML foundations (Shannon,
+Breiman, Quinlan, dropout, LSTM) and quantitative finance (efficient markets,
+SVM/RF index forecasting, SET/SET50 and Bitcoin prediction theses) — titles
+below. The PDFs themselves are copyrighted and not redistributed here.
+
+![Corpus paper titles](literature_review/Screenshot.png)
+
 **Cross-paper question (English):**
 
 ```text

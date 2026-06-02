@@ -11,8 +11,11 @@ venv/
 # Local data you may not want to publish (keep samples in data/, ignore the rest)
 data/private/
 
-# Real corpus: copyrighted papers + theses, ~200MB — used locally, never pushed
-literature_review/
+# Real corpus: copyrighted papers + theses, ~200MB — used locally, never pushed.
+# Ignore the folder's contents but keep the title-list screenshot (just titles,
+# no paper content) as evidence of what the corpus contains.
+literature_review/*
+!literature_review/Screenshot.png
 ocr_text/
 
 # Claude Code session logs
