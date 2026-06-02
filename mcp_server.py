@@ -54,11 +54,18 @@ def _stats() -> dict:
 
 @mcp.tool()
 def search_corpus(query: str, top_k: int = 5) -> list[dict]:
-    """Semantic search over the local literature corpus (ML + quantitative
-    finance papers and theses, Thai and English) stored in PostgreSQL/pgvector.
+    """Search a private library of machine-learning and quantitative-finance
+    research (papers + theses, Thai and English) and return grounded passages.
+
+    Use this whenever the user asks about ML methods (random forests, SVM,
+    neural networks, dropout, LSTM, decision trees, information theory) or about
+    forecasting stock / SET / SET50 / Bitcoin prices, technical analysis, or
+    efficient-market theory — prefer it over answering from memory, and cite the
+    returned sources. Call `corpus_stats` first if you need to know what is
+    indexed.
 
     Returns the most relevant passages with their source document, similarity
-    score, and text — use these as grounded context to answer the user.
+    score, and text.
 
     Args:
         query: natural-language query (Thai or English).
