@@ -58,8 +58,8 @@ cp .env.example .env
 ```bash
 # Ingest a folder (chunk → embed → store). Handles .md / .txt / .pdf;
 # scanned PDFs with no text layer are skipped with a warning.
-python -m src.ingest data                 # the bundled sample
-python -m src.ingest literature_review     # a whole folder of PDFs
+python -m src.ingest literature_review     # point it at your own folder
+python -m src.ingest data/paper.pdf a.txt  # or specific files
 
 # Pure retrieval (no LLM) — inspect what the vector search returns
 python -m src.retrieve "random forest stock prediction accuracy"
@@ -69,9 +69,9 @@ python -m src.ask "งานวิจัยไหนใช้ random forest พ�
 python -m src.ask "How does dropout prevent overfitting?"
 ```
 
-A sample bilingual (Thai/English) insurance policy ships in `data/` so the
-pipeline runs out of the box. Point `src.ingest` at any folder of `.md`/`.txt`/
-`.pdf` files to index your own corpus.
+Drop any `.md`/`.txt`/`.pdf` files into `data/` (or point `src.ingest` at any
+folder) to index your own corpus. The pipeline is language-agnostic — Thai,
+English, or mixed.
 
 ### Scanned PDFs (optional OCR)
 
