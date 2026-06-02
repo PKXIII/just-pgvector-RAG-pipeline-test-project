@@ -11,6 +11,9 @@ Prerequisites (Debian/Ubuntu):
 Usage:
     python scripts/ocr_pdf.py "literature_review/2545 ... .pdf" [more.pdf ...]
     python -m src.ingest ocr_text          # then ingest the OCR output
+
+Output is denoised (see `_denoise`) to drop OCR debris from shredded Thai
+diacritics before it is written.
 """
 from __future__ import annotations
 
@@ -20,6 +23,21 @@ from pathlib import Path
 OUT_DIR = Path("ocr_text")
 DPI = 300          # higher = better OCR, slower
 LANG = "tha+eng"   # Thai + English
+
+
+def _denoise(text: str) -> str:
+    """Drop OCR-debris lines: scattered single/double-character tokens that
+    appear when Thai diacritics get shredded by the scan. Real Thai content is
+    one long space-free run, and English words average ~5 chars, so a line of
+    many tiny tokens (avg length <= 1.6) is almost always garbage.
+    """
+    out = []
+    for line in text.splitlines():
+        toks = line.split()
+        if len(toks) >= 3 and sum(len(t) for t in toks) / len(toks) <= 1.6:
+            continue
+        out.append(line)
+    return "\n".join(out)
 
 
 def ocr_pdf(path: Path) -> Path:
@@ -40,8 +58,9 @@ def ocr_pdf(path: Path) -> Path:
         doc.close()
 
     out = OUT_DIR / (path.stem + ".txt")
-    out.write_text("\n\n".join(parts), encoding="utf-8")
-    print(f"\n  -> {out}  ({sum(len(p) for p in parts)} chars)")
+    cleaned = _denoise("\n\n".join(parts))
+    out.write_text(cleaned, encoding="utf-8")
+    print(f"\n  -> {out}  ({len(cleaned)} chars after denoise)")
     return out
 
 

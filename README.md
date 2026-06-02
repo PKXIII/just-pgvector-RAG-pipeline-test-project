@@ -87,9 +87,9 @@ python -m src.ingest ocr_text
 
 ## Example
 
-Real output, indexing **30 machine-learning / finance papers** (~14,500 chunks,
-embedded on a single RTX 2070). The answers are grounded strictly in the
-retrieved passages and cite them.
+Real output, indexing **34 machine-learning / finance papers** (~15,500 chunks,
+embedded on a single RTX 2070 — including 4 scanned Thai theses recovered via
+OCR). The answers are grounded strictly in the retrieved passages and cite them.
 
 The corpus is a personal literature review spanning ML foundations (Shannon,
 Breiman, Quinlan, dropout, LSTM) and quantitative finance (efficient markets,
