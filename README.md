@@ -85,6 +85,58 @@ python scripts/ocr_pdf.py "literature_review/<scanned>.pdf"   # → ocr_text/*.t
 python -m src.ingest ocr_text
 ```
 
+## Example
+
+Real output, indexing **30 machine-learning / finance papers** (~14,500 chunks,
+embedded on a single RTX 2070). The answers are grounded strictly in the
+retrieved passages and cite them.
+
+**Cross-paper question (English):**
+
+```text
+$ python -m src.ask "Across these papers, how do random forest and SVM compare
+  for predicting stock index direction? Cite which study found which result."
+
+Based on the context passages, all citations refer to the same study by
+Manish Kumar (2006), which compared SVM and Random Forest on the S&P CNX NIFTY.
+
+  • SVM outperformed random forest and neural network by 1.04% and 5.51%
+    respectively [4] — the highest accuracy of all methods tested.
+  • The edge was attributed to SVM's structural risk minimization vs. the
+    empirical risk minimization used by RF / neural nets [3].
+  • Random forest still ranked second, ahead of neural net, discriminant
+    analysis, and the logit model [4][2].
+
+Sources:
+  [1] 2006 Manish Kumar - Forecasting Stock Index Movement ... .pdf#11  (sim 0.793)
+  [2] 2006 Manish Kumar - Forecasting Stock Index Movement ... .pdf#1   (sim 0.749)
+  [3] 2006 Manish Kumar - Forecasting Stock Index Movement ... .pdf#66  (sim 0.740)
+  ...
+```
+
+Note the honesty: the model states the evidence comes from a *single* paper
+rather than inventing a cross-study comparison.
+
+**Cross-paper question (Thai):** the same pipeline answers in Thai and pulls
+from *five different* papers at once — a Thai bitcoin thesis, Dash & Dase, Kumar,
+Inthachot (SET50), and Thakur & Kumar:
+
+```text
+$ python -m src.ask "การวิเคราะห์ทางเทคนิคมีแนวคิดพื้นฐานอะไรบ้าง และมีงานวิจัยไหน
+  นำมารวมกับ machine learning เพื่อสร้างสัญญาณซื้อขาย?"
+
+การวิเคราะห์ทางเทคนิคตั้งอยู่บนสมมติฐาน 3 ข้อ: ราคาสะท้อนข้อมูลทุกอย่าง,
+ราคาเคลื่อนไหวตามแนวโน้ม, และพฤติกรรมนักลงทุนซ้ำรอยอดีต [1]. งานวิจัยที่นำมารวมกับ ML:
+  • Dash & Dase (2016): CEFLANN + ELM กับ technical indicators 6 ตัว → Buy/Hold/Sell [2]
+  • Inthachot (2015): trading rules ที่ optimize ด้วย Genetic Programming → Buy/Sell [4]
+  • Thakur & Kumar (2018): multi-category classifiers + Random Forest [5]
+
+Sources:
+  [1] 2561 มนตรี อินทโชติ - การทำนายราคาบิทคอยน์ ... (full).pdf#3086        (sim 0.679)
+  [2] 2016 Rajashree Dash and Pradipta Kishore Dase - A hybrid ... .pdf#9   (sim 0.646)
+  ...
+```
+
 ## Layout
 
 | Path | Role |
